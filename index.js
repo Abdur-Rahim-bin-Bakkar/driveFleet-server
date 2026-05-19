@@ -29,28 +29,47 @@ const run = async () => {
 
         const cardb = client.db('cardb')
         const carCollection = cardb.collection('carcollection')
+        const bookingsCollection = cardb.collection('bookingscollection')
 
 
         await client.db("admin").command({ ping: 1 });
         console.log('pink the deployment')
 
+        //all cars
         app.get('/all-cars', async (req, res) => {
             const result = await carCollection.find().toArray()
             res.send(result)
-            console.log(result, 'this is result')
+            // console.log(result, 'this is result')
         })
+        //available cars
         app.get('/available-cars', async (req, res) => {
-            const result = await carCollection.find({availabilityStatus:'Available'}).limit(6).toArray()
+            const result = await carCollection.find({ availabilityStatus: 'Available' }).limit(6).toArray()
             res.send(result)
             console.log(result, 'this is result')
         })
-        app.get('/car/:id',async(req,res)=>{
+        //details
+        app.get('/car/:id', async (req, res) => {
             const id = req.params.id;
-            const result = await carCollection.findOne({_id: new ObjectId(id)})
+            const result = await carCollection.findOne({ _id: new ObjectId(id) })
             console.log(result)
             res.send(result)
 
         })
+
+        //post booking cars
+        app.post('/bookings', async (req, res) => {
+            const carData = req.body;
+            const result = await bookingsCollection.insertOne(carData)
+            console.log(result, 'post result')
+            res.send(result)
+
+        })
+        //get booking cars
+        // app.get('/bookings/:userId', async (req, res) => {
+        //     const result = await bookingsCollection.find(req.params.userId)
+        //     console.log(result)
+        //     res.send(req)
+        // })
     }
     finally {
         // client.close()

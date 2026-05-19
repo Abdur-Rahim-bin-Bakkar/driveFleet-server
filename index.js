@@ -71,6 +71,20 @@ const run = async () => {
             console.log(result)
             res.send(result)
         })
+
+
+
+        app.post('/add-car',async(req,res)=>{
+            const carData = req.body;
+            const result = await carCollection.insertOne(carData)
+            console.log(result)
+            res.send(result)
+        })
+        app.get('/add-car/:userId',async(req,res)=>{
+            const userId = req.params.userId
+            const result = await carCollection.find({userId:userId}).toArray()
+            res.send(result)
+        })
     }
     finally {
         // client.close()

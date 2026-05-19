@@ -40,7 +40,7 @@ const run = async () => {
 
             const search = req.query.search || "";
             const carType = req.query.carType || "";
-            console.log(search,'this is search')
+            // console.log(search,'this is search')
 
             let query = {};
 

@@ -85,6 +85,23 @@ const run = async () => {
             const result = await carCollection.find({userId:userId}).toArray()
             res.send(result)
         })
+        app.patch('/add-car/:id',async(req,res)=>{
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            console.log(query)
+            const result = await carCollection.updateOne(query,{$set:{
+                imageURL:req.body.imageURL,
+                availabilityStatus:req.body.availabilityStatus,
+                pickupLocation:req.body.pickupLocation,
+                description:req.body.description, 
+                carType:req.body.carType,
+                dailyRentPrice:req.body.dailyRentPrice
+
+
+            }})
+            res.send(result)
+            console.log(result,'this is my rsulsf safhas fsf as')
+        })
     }
     finally {
         // client.close()

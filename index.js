@@ -64,12 +64,13 @@ const run = async () => {
             res.send(result)
 
         })
-        //get booking cars
-        // app.get('/bookings/:userId', async (req, res) => {
-        //     const result = await bookingsCollection.find(req.params.userId)
-        //     console.log(result)
-        //     res.send(req)
-        // })
+        // get booking cars
+        app.get('/bookings/:userId', async (req, res) => {
+            const userId= req.params.userId
+            const result = await bookingsCollection.find({userId:userId}).toArray()
+            console.log(result)
+            res.send(result)
+        })
     }
     finally {
         // client.close()

@@ -34,6 +34,11 @@ const run = async () => {
         await client.db("admin").command({ ping: 1 });
         console.log('pink the deployment')
 
+        app.get('/all-cars', async (req, res) => {
+            const result = await carCollection.find().toArray()
+            res.send(result)
+            console.log(result, 'this is result')
+        })
         app.get('/available-cars', async (req, res) => {
             const result = await carCollection.find({availabilityStatus:'Available'}).limit(6).toArray()
             res.send(result)

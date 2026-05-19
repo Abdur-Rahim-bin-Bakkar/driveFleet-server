@@ -37,10 +37,33 @@ const run = async () => {
 
         //all cars
         app.get('/all-cars', async (req, res) => {
-            const result = await carCollection.find().toArray()
-            res.send(result)
-            // console.log(result, 'this is result')
-        })
+
+            const search = req.query.search || "";
+            const carType = req.query.carType || "";
+            console.log(search,'this is search')
+
+            let query = {};
+
+            // ✅ Search by car name
+            if (search) {
+                query.carName = {
+                    $regex: search,
+                    $options: "i"
+                };
+            }
+
+            // ✅ Filter by car type
+            if (carType) {
+                query.carType = {
+                    $in: [carType]
+                };
+            }
+
+            const result = await carCollection.find(query).toArray();
+            // console.log(result,'etai khujchilam')
+
+            res.send(result);
+        });
         //available cars
         app.get('/available-cars', async (req, res) => {
             const result = await carCollection.find({ availabilityStatus: 'Available' }).limit(6).toArray()
@@ -66,41 +89,51 @@ const run = async () => {
         })
         // get booking cars
         app.get('/bookings/:userId', async (req, res) => {
-            const userId= req.params.userId
-            const result = await bookingsCollection.find({userId:userId}).toArray()
+            const userId = req.params.userId
+            const result = await bookingsCollection.find({ userId: userId }).toArray()
             console.log(result)
             res.send(result)
         })
 
 
 
-        app.post('/add-car',async(req,res)=>{
+        app.post('/add-car', async (req, res) => {
             const carData = req.body;
             const result = await carCollection.insertOne(carData)
             console.log(result)
             res.send(result)
         })
-        app.get('/add-car/:userId',async(req,res)=>{
+        app.get('/add-car/:userId', async (req, res) => {
             const userId = req.params.userId
-            const result = await carCollection.find({userId:userId}).toArray()
+            const result = await carCollection.find({ userId: userId }).toArray()
             res.send(result)
         })
-        app.patch('/add-car/:id',async(req,res)=>{
+        app.patch('/add-car/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: new ObjectId(id) }
             console.log(query)
-            const result = await carCollection.updateOne(query,{$set:{
-                imageURL:req.body.imageURL,
-                availabilityStatus:req.body.availabilityStatus,
-                pickupLocation:req.body.pickupLocation,
-                description:req.body.description, 
-                carType:req.body.carType,
-                dailyRentPrice:req.body.dailyRentPrice
+            const result = await carCollection.updateOne(query, {
+                $set: {
+                    imageURL: req.body.imageURL,
+                    availabilityStatus: req.body.availabilityStatus,
+                    pickupLocation: req.body.pickupLocation,
+                    description: req.body.description,
+                    carType: req.body.carType,
+                    dailyRentPrice: req.body.dailyRentPrice
 
 
-            }})
+                }
+            })
             res.send(result)
-            console.log(result,'this is my rsulsf safhas fsf as')
+            console.log(result, 'this is my rsulsf safhas fsf as')
+        })
+
+
+        app.delete('/add-car/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = carCollection.deleteOne(query)
+            res.send({ message: 'delete successfully' })
         })
     }
     finally {

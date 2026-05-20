@@ -94,7 +94,7 @@ const run = async () => {
             // console.log(result, 'this is result')
         })
         //details
-        app.get('/car/:id', async (req, res) => {
+        app.get('/car/:id',verifyToken, async (req, res) => {
             const id = req.params.id;
             const result = await carCollection.findOne({ _id: new ObjectId(id) })
             // con/sole.log(result)
@@ -184,7 +184,7 @@ const run = async () => {
             // console.log(result)
             res.send(result)
         })
-        app.get('/add-car/:userId', async (req, res) => {
+        app.get('/add-car/:userId',verifyToken, async (req, res) => {
             const userId = req.params.userId
             const result = await carCollection.find({ userId: userId }).toArray()
             res.send(result)

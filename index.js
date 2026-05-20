@@ -81,12 +81,89 @@ const run = async () => {
 
         //post booking cars
         app.post('/bookings', async (req, res) => {
+
             const carData = req.body;
+
+            // save booking data
             const result = await bookingsCollection.insertOne(carData)
+
             console.log(result, 'post result')
-            res.send(result)
+
+            // update or create bookUser field
+            await carCollection.updateOne(
+                {
+                    _id: new ObjectId(carData.carId)
+                },
+                {
+                    $inc: {
+                        bookUser: 1
+                    }
+                },
+                {
+                    upsert: false
+                }
+            )
+
+            res.send({
+                success: true,
+                result
+            })
 
         })
+
+
+
+
+
+
+
+
+        app.patch('/bookings/:id', async (req, res) => {
+
+            const carId = req.params.id
+
+
+
+            const result = await carCollection.updateOne(
+                { _id: new ObjectId(carId) },
+                {
+                    $inc: {
+                        bookUser: 1
+                    }
+                }
+            )
+
+            res.send({
+                success: true,
+                message: "Book count updated",
+                result
+            })
+
+
+        })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // get booking cars
         app.get('/bookings/:userId', async (req, res) => {
             const userId = req.params.userId

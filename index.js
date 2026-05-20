@@ -5,6 +5,7 @@ require("dotenv").config()
 const express = require('express')
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { createRemoteJWKSet, jwtVerify } = require("jose-cjs");
 
 const app = express()
 const port = process.env.PORT || 5000;
@@ -21,6 +22,28 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
+const jwks = createRemoteJWKSet(
+    new URL('http://localhost:3000/api/auth/jwks')
+)
+const verifyToken = async (req, res, next) => {
+    const authHeader = req.headers.authorization
+    if (!authHeader) {
+        return res.status(401).json({ message: "Unauthorization" })
+    }
+    const token = authHeader.split(" ")[1]
+    console.log(token, 'uporer token')
+    if (!token) {
+        return res.status(401).json({ message: "Unauthorization" })
+    }
+    try {
+
+        const { payload } = await jwtVerify(token, jwks)
+        next()
+    }
+    catch (error) {
+           return res.status(401).json({ message: "Unauthorization" })
+    }
+}
 
 const run = async () => {
     try {
@@ -68,13 +91,13 @@ const run = async () => {
         app.get('/available-cars', async (req, res) => {
             const result = await carCollection.find({ availabilityStatus: 'Available' }).limit(6).toArray()
             res.send(result)
-            console.log(result, 'this is result')
+            // console.log(result, 'this is result')
         })
         //details
         app.get('/car/:id', async (req, res) => {
             const id = req.params.id;
             const result = await carCollection.findOne({ _id: new ObjectId(id) })
-            console.log(result)
+            // con/sole.log(result)
             res.send(result)
 
         })
@@ -87,7 +110,7 @@ const run = async () => {
             // save booking data
             const result = await bookingsCollection.insertOne(carData)
 
-            console.log(result, 'post result')
+            // console.log(result, 'post result')
 
             // update or create bookUser field
             await carCollection.updateOne(
@@ -110,8 +133,6 @@ const run = async () => {
             })
 
         })
-
-
 
 
 
@@ -146,29 +167,12 @@ const run = async () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // get booking cars
-        app.get('/bookings/:userId', async (req, res) => {
-            const userId = req.params.userId
+        app.get('/bookings/:userId', verifyToken, async (req, res) => {
+            const userId = await req.params.userId
+            console.log(req.headers.authorization, 'ki ')
             const result = await bookingsCollection.find({ userId: userId }).toArray()
-            console.log(result)
+            // console.log(result)
             res.send(result)
         })
 
@@ -177,7 +181,7 @@ const run = async () => {
         app.post('/add-car', async (req, res) => {
             const carData = req.body;
             const result = await carCollection.insertOne(carData)
-            console.log(result)
+            // console.log(result)
             res.send(result)
         })
         app.get('/add-car/:userId', async (req, res) => {
@@ -202,7 +206,7 @@ const run = async () => {
                 }
             })
             res.send(result)
-            console.log(result, 'this is my rsulsf safhas fsf as')
+            // console.log(result, 'this is my rsulsf safhas fsf as')
         })
 
 

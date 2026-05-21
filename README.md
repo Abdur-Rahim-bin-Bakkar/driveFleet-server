@@ -4,9 +4,9 @@ This is the backend server of the DriveFleet Car Rental Platform. The server han
 
 ---
 
-## 🌐 Live Server
+## 🌐 Live Website
 
-🔗 Server URL: https://your-server-link.onrender.com
+🔗 Website URL: https://drivefleet-next-app.vercel.app/
 
 ---
 

@@ -23,7 +23,7 @@ const client = new MongoClient(uri, {
     }
 });
 const jwks = createRemoteJWKSet(
-    new URL('http://localhost:3000/api/auth/jwks')
+    new URL(`${process.env.CLIENT_URL}/api/auth/jwks`)
 )
 const verifyToken = async (req, res, next) => {
     const authHeader = req.headers.authorization
@@ -48,15 +48,15 @@ const verifyToken = async (req, res, next) => {
 const run = async () => {
     try {
 
-        await client.connect();
+        // await client.connect();
 
         const cardb = client.db('cardb')
         const carCollection = cardb.collection('carcollection')
         const bookingsCollection = cardb.collection('bookingscollection')
 
 
-        await client.db("admin").command({ ping: 1 });
-        console.log('pink the deployment')
+        // await client.db("admin").command({ ping: 1 });
+        // console.log('pink the deployment')
 
         //all cars
         app.get('/all-cars', async (req, res) => {
@@ -181,7 +181,7 @@ const run = async () => {
         app.post('/add-car', async (req, res) => {
             const carData = req.body;
             const result = await carCollection.insertOne(carData)
-            // console.log(result)
+            console.log(result)
             res.send(result)
         })
         app.get('/add-car/:userId',verifyToken, async (req, res) => {

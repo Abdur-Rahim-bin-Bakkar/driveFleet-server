@@ -206,7 +206,7 @@ const run = async () => {
                 }
             })
             res.send(result)
-            // console.log(result, 'this is my rsulsf safhas fsf as')
+            console.log(result, 'this is my rsulsf safhas fsf as')
         })
 
 
